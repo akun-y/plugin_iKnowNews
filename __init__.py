@@ -1,0 +1,1 @@
+from .inews import *
