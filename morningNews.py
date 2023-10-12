@@ -1,15 +1,21 @@
 import json
 import time
+from venv import logger
 import requests
+
+from config import conf, load_config, global_config
+from plugins.plugin import Plugin
 
 #每日60秒早报
 #https://www.alapi.cn/api/view/93
 #每天获取一次
 # 在每天的9点调度函数
-def getMorningNewsOnDay():
-    url = "https://v2.alapi.cn/api/zaobao"
 
-    payload = "token=cu1HWtIiBHGqu16t&format=json"
+
+        
+def getMorningNewsOnDay(token):    
+    url = "https://v2.alapi.cn/api/zaobao"
+    payload = f"token={token}&format=json"
     headers = {'Content-Type': "application/x-www-form-urlencoded"}
 
     response = requests.request("POST", url, data=payload, headers=headers)
@@ -29,19 +35,18 @@ def getMorningNewsOnDay():
     return news +'\n' +weiyu
 
 
-#main 全局
-newsOfDay = ""
-lastDate = 0
 
-def getMorningNews():
+newsOfDay=""
+lastDate=0
+
+def getMorningNews(token):
     global newsOfDay, lastDate
-    
     currentDate = time.strftime("%Y%m%d", time.localtime())
     if newsOfDay=="" or currentDate != lastDate :
-        newsOfDay = getMorningNewsOnDay()
+        newsOfDay = getMorningNewsOnDay(token)
         lastDate = time.strftime("%Y%m%d", time.localtime())
         print("getMorningNews最新一次调用时间:"+lastDate)
-    
+
     print("getMorningNews最后一次调用时间:"+lastDate)
     return newsOfDay
 

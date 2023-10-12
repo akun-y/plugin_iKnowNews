@@ -21,7 +21,15 @@ class iNews(Plugin):
     def __init__(self):
         super().__init__()
         self.handlers[Event.ON_HANDLE_CONTEXT] = self.on_handle_context
-        logger.info("[iKnowNews] inited")
+    
+        self.config = super().load_config()
+        if not self.config:
+            # 未加载到配置，使用模板中的配置
+            self.config = self._load_config_template()
+        if self.config:
+            self.alapi_token = self.config.get("alapi_token")
+        
+        logger.info(f"[iKnowNews] inited, config={self.config}")
 
     def on_handle_context(self, e_context: EventContext):
         if e_context["context"].type not in [
@@ -65,11 +73,11 @@ class iNews(Plugin):
             e_context["reply"] = reply
             e_context.action = EventAction.BREAK  # 事件结束，进入默认处理逻辑，一般会覆写reply
 
-        if content == "$inews" or content == "inews":
+        if content == "inews" or content.startswith("$inews"):
             reply = Reply()
             reply.type = ReplyType.TEXT
             msg: ChatMessage = e_context["context"]["msg"]
-            morningNews = getMorningNews()
+            morningNews = getMorningNews(self.alapi_token)
             if e_context["context"]["isgroup"]:
                 reply.content = f"Hello, {msg.actual_user_nickname} from {msg.from_user_nickname}.\n{morningNews}"
             else:
