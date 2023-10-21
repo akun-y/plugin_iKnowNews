@@ -15,7 +15,7 @@ from plugins import *
     hidden=False,
     desc="一个获取最新新闻的插件",
     version="0.5",
-    author="akun",
+    author="akun.yunqi",
 )
 class iNews(Plugin):
     def __init__(self):
@@ -55,36 +55,19 @@ class iNews(Plugin):
 
         content = e_context["context"].content
         logger.debug("[Hello] on_handle_context. content: %s" % content)
-        if content == "Hello":
-            reply = Reply()
-            reply.type = ReplyType.TEXT
-            msg: ChatMessage = e_context["context"]["msg"]
-            if e_context["context"]["isgroup"]:
-                reply.content = f"Hello, {msg.actual_user_nickname} from {msg.from_user_nickname}."
-            else:
-                reply.content = f"Hello, {msg.from_user_nickname}.."
-            e_context["reply"] = reply
-            e_context.action = EventAction.BREAK_PASS  # 事件结束，并跳过处理context的默认逻辑
-
-        if content == "Hi":
-            reply = Reply()
-            reply.type = ReplyType.TEXT
-            reply.content = "Hi..."
-            e_context["reply"] = reply
-            e_context.action = EventAction.BREAK  # 事件结束，进入默认处理逻辑，一般会覆写reply
-
+    
         if content == "inews" or content.startswith("$inews"):
             reply = Reply()
             reply.type = ReplyType.TEXT
             msg: ChatMessage = e_context["context"]["msg"]
             morningNews = getMorningNews(self.alapi_token)
             if e_context["context"]["isgroup"]:
-                reply.content = f"Hello, {msg.actual_user_nickname} from {msg.from_user_nickname}.\n{morningNews}"
+                reply.content = f"{morningNews}"
             else:
-                reply.content = f"Hello, {msg.from_user_nickname}\n{morningNews}"
+                reply.content = f"{morningNews}"
             e_context["reply"] = reply
             e_context.action = EventAction.BREAK_PASS
 
     def get_help_text(self, **kwargs):
-        help_text = "输入Hello，我会回复你的名字\n输入$inews，我会回复你最新新闻\n"
+        help_text = "输入$inews，我会回复你最新新闻\n"
         return help_text
