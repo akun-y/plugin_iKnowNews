@@ -62,9 +62,9 @@ class iNews(Plugin):
             msg: ChatMessage = e_context["context"]["msg"]
             morningNews = getMorningNews(self.alapi_token)
             if e_context["context"]["isgroup"]:
-                reply.content = f"{morningNews}"
+                reply.content = f"\n{morningNews}"
             else:
-                reply.content = f"{morningNews}"
+                reply.content = f"\n{morningNews}"
             e_context["reply"] = reply
             e_context.action = EventAction.BREAK_PASS
 
