@@ -1,6 +1,7 @@
 import json
 import time
-from venv import logger
+
+from loguru import logger
 import requests
 
 from config import conf, load_config, global_config
@@ -11,7 +12,6 @@ from plugins.plugin import Plugin
 #每天获取一次
 # 在每天的9点调度函数
 
-
         
 def getMorningNewsOnDay(token):    
     url = "https://v2.alapi.cn/api/zaobao"
@@ -21,6 +21,9 @@ def getMorningNewsOnDay(token):
     response = requests.request("POST", url, data=payload, headers=headers)
 
     result = json.loads(response.text)
+    if result["code"] != 200:
+        logger.error(f"[iKnowNews] 获取每日早报失败,错误码:{result['code']},错误信息:{result['msg']}")
+        return ""
     #print(result)
     print("getMorningNewsOnDay===>")
 
@@ -65,12 +68,37 @@ def getMorningNews2():
     return news +'\n' +weiyu
 
 
-def get_weather(city_name):
-    url = "https://v2.alapi.cn/api/weather/"
-    payload = "city=" + city_name
+def get_weather_forty(token,city_name):
+    """
+    获取40天天气预报
+    https://www.alapi.cn/api/view/126
+    Args:
+        token (str): alapi token
+        city_name (str): 城市名称
+
+    Returns:
+        dict: 天气预报数据
+    """
+    url = "https://v2.alapi.cn/api/tianqi/forty"
+    payload = f"token={token}&format=json&city={city_name}"
     headers = {'Content-Type': "application/x-www-form-urlencoded"}
     response = requests.request("POST", url, data=payload, headers=headers)
     result = response.json()
     return result
 
+def get_weather(token,city_name):
+    """
+    获取40天天气预报
+    https://www.alapi.cn/api/view/65
+    Args:
+        token (str): alapi token
+        city_name (str): 城市名称
+
+    Returns:
+        dict: 天气预报数据
+    """
+    url = f"https://v2.alapi.cn/api/tianqi?token={token}&city={city_name}"
+    response = requests.request("GET", url)
+    result = response.json()
+    return result
 
